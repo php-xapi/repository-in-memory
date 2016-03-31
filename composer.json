@@ -1,0 +1,38 @@
+{
+    "name": "php-xapi/repository-in-memory",
+    "description": "In-memory implementation of an xAPI (Experience API) repository",
+    "keywords": ["xAPI", "Tin Can API", "Experience API", "storage", "database", "repository", "in-memory", "memory", "testing"],
+    "homepage": "https://github.com/php-xapi/repository-in-memory/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Flothmann",
+            "homepage": "https://github.com/xabbuh"
+        }
+    ],
+    "require": {
+        "php-xapi/model": "^0.1.0",
+        "php-xapi/repository-api": "^0.2.0"
+    },
+    "require-dev": {
+        "php-xapi/exception": "^0.1.0"
+    },
+    "provide": {
+        "php-xapi/repository-implementation": "0.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "XApi\\Repository\\InMemory\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "XApi\\Repository\\InMemory\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
+}
