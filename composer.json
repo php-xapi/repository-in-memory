@@ -11,14 +11,13 @@
         }
     ],
     "require": {
-        "php-xapi/model": "^0.1.0",
-        "php-xapi/repository-api": "^0.2.0"
-    },
-    "require-dev": {
-        "php-xapi/exception": "^0.1.0"
+        "php-xapi/exception": "^0.1",
+        "php-xapi/model": "^1.0",
+        "php-xapi/repository-api": "^0.3",
+        "ramsey/uuid": "^2.9"
     },
     "provide": {
-        "php-xapi/repository-implementation": "0.2"
+        "php-xapi/repository-implementation": "0.3"
     },
     "autoload": {
         "psr-4": {

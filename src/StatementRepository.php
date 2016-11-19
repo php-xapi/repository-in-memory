@@ -11,63 +11,79 @@
 
 namespace XApi\Repository\InMemory;
 
-use XApi\Repository\Api\Mapping\MappedStatement;
-use XApi\Repository\Api\StatementRepository as BaseStatementRepository;
+use Rhumsaa\Uuid\Uuid;
+use Xabbuh\XApi\Common\Exception\NotFoundException;
+use Xabbuh\XApi\Model\Actor;
+use Xabbuh\XApi\Model\Statement;
+use Xabbuh\XApi\Model\StatementId;
+use Xabbuh\XApi\Model\StatementsFilter;
+use XApi\Repository\Api\StatementRepositoryInterface;
 
 /**
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-class StatementRepository extends BaseStatementRepository
+final class StatementRepository implements StatementRepositoryInterface
 {
     /**
-     * @var MappedStatement[]
+     * @var Statement[]
      */
     private $statements = array();
 
     /**
      * {@inheritdoc}
      */
-    protected function findMappedStatement(array $criteria)
+    public function findStatementById(StatementId $statementId, Actor $authority = null)
     {
-        foreach ($this->statements as $statement) {
-            if ($this->doesStatementMatchCriteria($statement, $criteria)) {
-                return $statement;
-            }
+        if (!isset($this->statements[$statementId->getValue()])) {
+            throw new NotFoundException(sprintf('A statement with id "%s" could not be found.', $statementId->getValue()));
         }
 
-        return null;
+        $statement = $this->statements[$statementId->getValue()];
+
+        if ($statement->isVoidStatement()) {
+            throw new NotFoundException(sprintf('The statement with id "%s" is a voiding statement.', $statementId->getValue()));
+        }
+
+        return $statement;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function findMappedStatements(array $criteria)
+    public function findVoidedStatementById(StatementId $voidedStatementId, Actor $authority = null)
     {
-        $result = array();
-
-        foreach ($this->statements as $statement) {
-            if ($this->doesStatementMatchCriteria($statement, $criteria)) {
-                $result[] = $statement;
-            }
+        if (!isset($this->statements[$voidedStatementId->getValue()])) {
+            throw new NotFoundException(sprintf('A statement with id "%s" could not be found.', $voidedStatementId->getValue()));
         }
 
-        return $result;
+        $statement = $this->statements[$voidedStatementId->getValue()];
+
+        if (!$statement->isVoidStatement()) {
+            throw new NotFoundException(sprintf('The statement with id "%s" is not a voiding statement.', $voidedStatementId->getValue()));
+        }
+
+        return $statement;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function storeMappedStatement(MappedStatement $mappedStatement, $flush)
+    public function findStatementsBy(StatementsFilter $criteria, Actor $authority = null)
     {
-        $this->statements[] = $mappedStatement;
+        return array();
     }
 
-    private function doesStatementMatchCriteria(MappedStatement $statement, array $criteria)
+    /**
+     * {@inheritdoc}
+     */
+    public function storeStatement(Statement $statement, $flush = true)
     {
-        if (isset($criteria['id']) && $criteria['id'] === $statement->id) {
-            return true;
+        if (null === $statement->getId()) {
+            $statement = $statement->withId(StatementId::fromUuid(Uuid::uuid4()));
         }
 
-        return false;
+        $this->statements[$statement->getId()->getValue()] = $statement;
+
+        return $statement->getId();
     }
 }
