@@ -11,12 +11,13 @@
 
 namespace XApi\Repository\InMemory;
 
-use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Uuid as RhumsaaUuid;
 use Xabbuh\XApi\Common\Exception\NotFoundException;
 use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Statement;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementsFilter;
+use Xabbuh\XApi\Model\Uuid;
 use XApi\Repository\Api\StatementRepositoryInterface;
 
 /**
@@ -79,7 +80,13 @@ final class StatementRepository implements StatementRepositoryInterface
     public function storeStatement(Statement $statement, $flush = true)
     {
         if (null === $statement->getId()) {
-            $statement = $statement->withId(StatementId::fromUuid(Uuid::uuid4()));
+            if (class_exists('Xabbuh\XApi\Model\Uuid')) {
+                $uuid = Uuid::uuid4();
+            } else {
+                $uuid = RhumsaaUuid::uuid4();
+            }
+
+            $statement = $statement->withId(StatementId::fromUuid($uuid));
         }
 
         $this->statements[$statement->getId()->getValue()] = $statement;

@@ -12,10 +12,11 @@
     ],
     "require": {
         "php-xapi/exception": "^0.1",
-        "php-xapi/model": "^1.0",
-        "php-xapi/repository-api": "^0.3",
+        "php-xapi/model": "^1.0 || ^2.0",
+        "php-xapi/repository-api": "^0.3 || ^0.4",
         "ramsey/uuid": "^2.9"
     },
+    "minimum-stability": "dev",
     "provide": {
         "php-xapi/repository-implementation": "0.3"
     },
